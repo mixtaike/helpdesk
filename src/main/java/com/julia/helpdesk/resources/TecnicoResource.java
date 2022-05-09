@@ -11,6 +11,8 @@ import com.julia.helpdesk.domain.Tecnico;
 import com.julia.helpdesk.domain.dtos.TecnicoDTO;
 import com.julia.helpdesk.services.TecnicoService;
 
+import javassist.tools.rmi.ObjectNotFoundException;
+
 @RestController
 @RequestMapping(value="/tecnicos")
 public class TecnicoResource {
@@ -19,7 +21,7 @@ public class TecnicoResource {
 	private TecnicoService service;
 	
 	@GetMapping(value="{id}")
-	public ResponseEntity<TecnicoDTO> FindById(@PathVariable Integer id){
+	public ResponseEntity<TecnicoDTO> FindById(@PathVariable Integer id) throws ObjectNotFoundException{
 		Tecnico obj = service.findById(id);
 		
 		return ResponseEntity.ok().body(new TecnicoDTO(obj));
