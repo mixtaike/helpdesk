@@ -70,6 +70,17 @@ public class TecnicoService {
 		
 	}
 
+	public void delete(Integer id) throws ObjectNotFoundException {
+		Tecnico obj = findById(id);
+		if(obj.getChamados().size() > 0) {
+			throw new DataIntegrityViolationException("O técnico possui ordens de serviço e não pode ser deletado!");
+			
+		}
+		
+		repository.deleteById(id);
+		
+	}
+
 
 	
 	
