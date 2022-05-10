@@ -19,60 +19,55 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import com.julia.helpdesk.security.JWTAuthenticationFilter;
 import com.julia.helpdesk.security.JWTUtil;
 
+
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
-	
-	private static final String[] PUBLIC_MATCHERS = { "/h2-console/**" };
-	
+
+	private static final String[] PUBLIC_MATCHERS = {"/h2-console/**"};
+
 	@Autowired
 	private Environment env;
-	
 	@Autowired
 	private JWTUtil jwtUtil;
-	
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		
 		if(Arrays.asList(env.getActiveProfiles()).contains("test")) {
 			http.headers().frameOptions().disable();
 		}
-		
+
 		http.cors().and().csrf().disable();
 		http.addFilter(new JWTAuthenticationFilter(authenticationManager(), jwtUtil));
+		http.authorizeRequests()
+			.antMatchers(PUBLIC_MATCHERS).permitAll()
+			.anyRequest().authenticated();
 
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
-	
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
 	}
-	//@Bean
-	//CorsConfigurationSource corsConfigurationSource() {
-		//CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-		//configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
-		//final CorsConfigurationSource source = (CorsConfigurationSource) new UrlBasedCorsConfigurationSource();
-		//((UrlBasedCorsConfigurationSource) source).registerCorsConfiguration("/**", configuration);
-		//return source;
-	
-	
-	//}
-	
-		UrlBasedCorsConfigurationSource corsConfigurationSource() {
+
+
+	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
 		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
-		return source;
+		return (CorsConfigurationSource) source;
 	}
-		
+
 	@Bean
 	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();	}
-	
-	
-		
+		return new BCryptPasswordEncoder();
+	}
+
 }
+
+
+
+
