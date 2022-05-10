@@ -18,25 +18,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.julia.helpdesk.domain.dtos.CredenciasDTO;
 
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
-	
-	private AuthenticationManager auteAuthenticationManager;
+public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+	private AuthenticationManager authenticationManager;
 	private JWTUtil jwtUtil;
-	
-	
-	public JWTAuthenticationFilter(AuthenticationManager auteAuthenticationManager, JWTUtil jwtUtil) {
+
+	public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
 		super();
-		this.auteAuthenticationManager = auteAuthenticationManager;
+		this.authenticationManager = authenticationManager;
 		this.jwtUtil = jwtUtil;
 	}
-	
+
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		try {
 			CredenciasDTO creds = new ObjectMapper().readValue(request.getInputStream(), CredenciasDTO.class);
-			UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getSenha(), new ArrayList<>());
-			Authentication authentication = auteAuthenticationManager.authenticate(authenticationToken);
+			UsernamePasswordAuthenticationToken authenticationToken = 
+					new UsernamePasswordAuthenticationToken(creds.getEmail(), creds.getSenha(), new ArrayList<>());
+			Authentication authentication = authenticationManager.authenticate(authenticationToken);
 			return authentication;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -50,7 +50,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		String username = ((UserSS) authResult.getPrincipal()).getUsername();
 		String token = jwtUtil.generateToken(username);
 		response.setHeader("access-control-expose-headers", "Authorization");
-		response.setHeader("Authorization", "Bearer" + token);
+		response.setHeader("Authorization", "Bearer " + token);
 	}
 	
 	@Override
@@ -72,6 +72,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				+ "\"path\": \"/login\"}";
 	}
 	
-	
-	
 }
+	
+	
+
