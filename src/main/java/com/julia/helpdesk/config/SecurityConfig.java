@@ -15,12 +15,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.julia.helpdesk.security.JWTAuthenticationFilter;
 import com.julia.helpdesk.security.JWTAuthorizationFilter;
 import com.julia.helpdesk.security.JWTUtil;
-
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -54,13 +53,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
 	}
 
-
+	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
 		configuration.setAllowedMethods(Arrays.asList("POST", "GET", "PUT", "DELETE", "OPTIONS"));
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
-		return (CorsConfigurationSource) source;
+		return source;
 	}
 
 	@Bean
